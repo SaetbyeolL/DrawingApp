@@ -174,7 +174,7 @@ function onLineWidthChange(event){//event gives us new value of input in console
 function onColorChange(event) {
     ctx.strokeStyle = event.target.value;//fill  line
     ctx.fillStyle = event.target.value; // fill inside something
-  }
+}
 
 function onColorClick(event){
     const colorValue = event.target.dataset.color;
@@ -191,7 +191,7 @@ canvas.addEventListener("mouseleave", StopPainting);//when leaving the board
 lineWidth.addEventListener("change", onLineWidthChange);
 color.addEventListener("change", onColorChange);
 
-colorOptions.forEach(color => color.addEventListener("click",onColorClick))
+colorOptions.forEach(color => color.addEventListener("click", onColorClick))
 
 ////////////////////////////////////////////////////////////// SET UP Paint Color
 
