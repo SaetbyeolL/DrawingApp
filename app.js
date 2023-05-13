@@ -1,3 +1,7 @@
+const modeBtn = document.getElementById("mode-btn");
+const destroyBtn = document.getElementById("destroy-btn");
+const eraseBtn = document.getElementById("eraser-btn");
+
 const colorOptions = Array.from(
     document.getElementsByClassName("color-option")
 );
@@ -5,10 +9,15 @@ const color = document.getElementById("color");
 const lineWidth = document.getElementById("line-width");
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");//Paint brush
-canvas.width=800;
-canvas.height=800;
+
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 800;
+
+canvas.width=CANVAS_WIDTH;
+canvas.height=CANVAS_HEIGHT;
 ctx.lineWidth = lineWidth.value;//5
 let isPainting = false;//when it not moving
+let isFilling = false;//when it not filling
 
 ///////////////////////////////////////////////////SET UP
 
@@ -148,7 +157,7 @@ If it need new path,
 
 // lineWidth.addEventListener("change", onLineWidthChange);
 
-//////////////////////////////////////////////////////// LineWidth change
+///////////////////////////////////////////////////////////////////////// LineWidth change
 
 function onMove(event){
     if(isPainting){
@@ -166,7 +175,7 @@ function StopPainting(){
     ctx.beginPath();
 }
 
-function onLineWidthChange(event){//event gives us new value of input in console. 
+function onLineWidthChange(event){//this will execute whenever input value is changed
     //console.log(event.target.value);
     ctx.lineWidth = event.target.value;
 }
@@ -177,24 +186,60 @@ function onColorChange(event) {
 }
 
 function onColorClick(event){
+    console.dir(event.target.dataset.color);//This show us 'color' on console.
     const colorValue = event.target.dataset.color;
     ctx.strokeStyle = colorValue;//fill  line
     ctx.fillStyle = colorValue;// fill inside something
     color.value = colorValue;
 }
 
+function onModeClick(event) {   
+    if(isFilling) {
+        isFilling = false;
+        modeBtn.innerText = "Fill";
+    } else {
+        isFilling = true;
+        modeBtn.innerText = "Draw";
+    }
+}
+
+function onCanvasClick(){
+    if(isFilling){
+        ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+    }
+}
+
+function onDestroyClick(){
+    ctx.fillStyle = "white";
+    ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+}
+
+function onEraserClick(){
+    ctx.strokeStyle = "white";
+    isFilling = false;
+    modeBtn.innerText = "Fill";
+}
+
 canvas.addEventListener("mousemove", onMove);
 canvas.addEventListener("mousedown", StartPainting);
 canvas.addEventListener("mouseup", StopPainting);
-canvas.addEventListener("mouseleave", StopPainting);//when leaving the board 
+canvas.addEventListener("mouseleave", StopPainting);//when leaving the board
+canvas.addEventListener("click", onCanvasClick);
 
 lineWidth.addEventListener("change", onLineWidthChange);
 color.addEventListener("change", onColorChange);
 
-colorOptions.forEach(color => color.addEventListener("click", onColorClick))
+colorOptions.forEach(color => color.addEventListener("click", onColorClick));
 
-////////////////////////////////////////////////////////////// SET UP Paint Color
+modeBtn.addEventListener("click", onModeClick);// Draw/Fill mode button
+destroyBtn.addEventListener("click", onDestroyClick);
+eraseBtn.addEventListener("click", onEraserClick);
 
+
+/*Inside of HTML element, we can put in whatever we want if we use "data-"
+  ex) date-color = "#34495e". then it will see that on 'console' as attribute of "dataset"*/ 
+
+////////////////////////////////////////////////////////////////////// SET UP Paint Color & fill/draw/destroy/erase button
 
 
 
