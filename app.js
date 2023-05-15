@@ -1,3 +1,7 @@
+const saveBtn = document.getElementById("save");
+const textInput = document.getElementById("text");
+const fileInput = document.getElementById("file");
+
 const modeBtn = document.getElementById("mode-btn");
 const destroyBtn = document.getElementById("destroy-btn");
 const eraseBtn = document.getElementById("eraser-btn");
@@ -16,6 +20,7 @@ const CANVAS_HEIGHT = 800;
 canvas.width=CANVAS_WIDTH;
 canvas.height=CANVAS_HEIGHT;
 ctx.lineWidth = lineWidth.value;//5
+ctx.lineCap = "round"; // edge round
 let isPainting = false;//when it not moving
 let isFilling = false;//when it not filling
 
@@ -193,7 +198,7 @@ function onColorClick(event){
     color.value = colorValue;
 }
 
-function onModeClick(event) {   
+function onModeClick(event) {//choose Fill or Draw
     if(isFilling) {
         isFilling = false;
         modeBtn.innerText = "Fill";
@@ -203,7 +208,7 @@ function onModeClick(event) {
     }
 }
 
-function onCanvasClick(){
+function onCanvasClick(){ //fill canvas
     if(isFilling){
         ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
     }
@@ -220,6 +225,40 @@ function onEraserClick(){
     modeBtn.innerText = "Fill";
 }
 
+function onFileChange(event){ // file upload
+    //console.dir(event.target);
+    const file = event.target.files[0];//only one file upload
+    const url = URL.createObjectURL(file);//this makes url for image
+    const image = new Image() //<-JS version = HTML version <img src=""/>
+    image.src = url;
+    image.onload = function(){
+        ctx.drawImage(image, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        fileInput.value = null; //this makes image change without error
+    }
+}
+
+function onDoubleClick(event) { // text input
+    const text = textInput.value;
+    if(text !== "" ) { //if text input is not empty
+        ctx.save();//this saves current status, color, style, etc.
+        ctx.lineWidth = 1;
+        ctx.font = "50px serif";
+        ctx.fillText(text, event.offsetX, event.offsetY);
+        ctx.restore();//put it back to saved version
+    }    
+    /*all changes between save and restore will not be saved */
+}
+
+function onSaveClick() { //save current canvas image
+    const url = canvas.toDataURL(); // Convert drawing on canvas to url
+    const a = document.createElement("a");//create a tag and make link
+    a.href = url // set canvas url into href
+    a.download = "myDrawing.png" // download and save image name "myDrawing"
+    //.download: Tell the browser to download the content at href
+    a.click(); //when click the link, file is downloaded
+}
+
+canvas.addEventListener("dblclick", onDoubleClick);
 canvas.addEventListener("mousemove", onMove);
 canvas.addEventListener("mousedown", StartPainting);
 canvas.addEventListener("mouseup", StopPainting);
@@ -234,12 +273,13 @@ colorOptions.forEach(color => color.addEventListener("click", onColorClick));
 modeBtn.addEventListener("click", onModeClick);// Draw/Fill mode button
 destroyBtn.addEventListener("click", onDestroyClick);
 eraseBtn.addEventListener("click", onEraserClick);
-
+fileInput.addEventListener("change", onFileChange);
+saveBtn.addEventListener("click", onSaveClick);
 
 /*Inside of HTML element, we can put in whatever we want if we use "data-"
   ex) date-color = "#34495e". then it will see that on 'console' as attribute of "dataset"*/ 
 
-////////////////////////////////////////////////////////////////////// SET UP Paint Color & fill/draw/destroy/erase button
+////////////////////////////////////////////////////////////////////// SET UP Paint Color & fill/draw/destroy/erase/file button
 
 
 
