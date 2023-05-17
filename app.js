@@ -201,10 +201,10 @@ function onColorClick(event){
 function onModeClick(event) {//choose Fill or Draw
     if(isFilling) {
         isFilling = false;
-        modeBtn.innerText = "Fill";
+        modeBtn.innerText = "Draw";
     } else {
         isFilling = true;
-        modeBtn.innerText = "Draw";
+        modeBtn.innerText = "Fill";
     }
 }
 
